@@ -1,5 +1,7 @@
 ﻿using AddressBook.Application.DTOs.AddressBookDTOs;
 using AddressBook.Application.Interfaces;
+using AddressBook.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +9,8 @@ namespace AddressBook_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
+
     public class AddressBookController : ControllerBase
     {
         private readonly IAddressBookService _service;
@@ -14,6 +18,13 @@ namespace AddressBook_API.Controllers
         public AddressBookController(IAddressBookService service)
         {
             _service = service;
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] AddressBookSearchQuery query)
+        {
+            var result = await _service.SearchAsync(query);
+            return Ok(result);
         }
 
         [HttpGet]

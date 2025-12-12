@@ -6,6 +6,7 @@ using AddressBook.Domain.Entities;
 using AddressBook.Infrastructure.DBContext;
 using AddressBook.Infrastructure.Repositories;
 using AddressBook.Infrastructure.UnitOfWork;
+using AddressBook_API.Middleware;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -47,9 +48,15 @@ namespace AddressBook_API
                 });
             });
 
-            builder.Services.AddDbContext<AddressBookDBContext>(s => { s.UseSqlServer(builder.Configuration.GetConnectionString("conString")); });
+            builder.Services.AddDbContext<AddressBookDBContext>(s => 
+            { 
+                s.UseSqlServer(builder.Configuration.GetConnectionString("conString"));
+                s.UseLazyLoadingProxies();
+            });
 
             builder.Services.AddScoped<IAddressBookService, AddressBookService>();
+            builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+            builder.Services.AddScoped<IJobService, JobService>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -90,8 +97,10 @@ namespace AddressBook_API
                 app.UseSwaggerUI();
             }
 
+            app.UseGlobalExceptionHandler();
             app.UseHttpsRedirection();
 
+            
             app.UseAuthentication();
             app.UseAuthorization();
 
