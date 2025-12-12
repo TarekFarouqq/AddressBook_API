@@ -34,9 +34,7 @@ namespace AddressBook.Domain.Entities
         public string Email { get; set; } = string.Empty;
         public string? PhotoFileName { get; set; }      // stored file name in wwwroot/uploads
 
-        [Required(ErrorMessage = "Email is required")]
-        [Range(18, 100, ErrorMessage = "Age must be between 18 and 100")]
-        public int Age { get; set; }
+        public int Age => CalculateAge(DateOfBirth);
         public bool IsDeleted { get; set; } = false;
 
         [ForeignKey("DepartmentId")]
@@ -47,5 +45,14 @@ namespace AddressBook.Domain.Entities
 
 
 
+        #region Age Calculation Helper
+        private static int CalculateAge(DateTime dateOfBirth)
+        {
+            var today = DateTime.Today;
+            var age = today.Year - dateOfBirth.Year;
+            if (dateOfBirth.Date > today.AddYears(-age)) age--;
+            return age;
+        }
+        #endregion
     }
 }

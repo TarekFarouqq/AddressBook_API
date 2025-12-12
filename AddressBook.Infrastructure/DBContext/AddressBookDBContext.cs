@@ -35,5 +35,12 @@ namespace AddressBook.Infrastructure.DBContext
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseLazyLoadingProxies();
+            }
+        }
     }
 }
