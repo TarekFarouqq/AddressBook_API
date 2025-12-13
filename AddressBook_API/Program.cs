@@ -22,31 +22,8 @@ namespace AddressBook_API
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            // Swagger Configuration for testing APIs with JWT Authentication (Return it to builder.Services.AddSwaggerGen() 0nly  )
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "AddressBook API", Version = "v1" });
-
-                // Add JWT Authentication to Swagger
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement{
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-                        },
-                        new string[]{}
-                    }
-                });
-            });
+           
+            builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<AddressBookDBContext>(s => 
             { 
@@ -60,6 +37,7 @@ namespace AddressBook_API
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
             //Authentication & Authorization
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AddressBookDBContext>().AddDefaultTokenProviders();
@@ -84,7 +62,18 @@ namespace AddressBook_API
                 });
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<JwtTokenService>();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy
+                          .AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                    //.AllowCredentials();
 
+                });
+            });
 
 
             builder.Services.AddOpenApi();
@@ -99,8 +88,10 @@ namespace AddressBook_API
 
             app.UseGlobalExceptionHandler();
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
-            
+            app.UseCors("AllowAll");
+
             app.UseAuthentication();
             app.UseAuthorization();
 

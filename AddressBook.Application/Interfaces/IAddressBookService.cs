@@ -11,7 +11,7 @@ namespace AddressBook.Application.Interfaces
     {
         Task<IEnumerable<AddressBookReadDto>> GetAllAsync();
         Task<AddressBookReadDto?> GetByIdAsync(int id);
-        Task<int> CreateAsync(AddressBookCreateDto dto);
+        Task<int> CreateAsync(AddressBookCreateDto dto, Stream? photoStream, string? originalFileName);
         Task UpdateAsync(int id, AddressBookReadDto dto);
         Task DeleteAsync(int id);
         Task<byte[]> ExportToExcelAsync();

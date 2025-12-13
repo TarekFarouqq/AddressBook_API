@@ -8,7 +8,8 @@ namespace AddressBook_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
+    [Authorize]
+
 
     public class DepartmentsController : ControllerBase
     {
