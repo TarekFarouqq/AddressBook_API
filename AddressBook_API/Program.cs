@@ -80,7 +80,7 @@ namespace AddressBook_API
 
             var app = builder.Build();
 
-            if (app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment()|| app.Environment.IsProduction())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
@@ -88,7 +88,6 @@ namespace AddressBook_API
 
             app.UseGlobalExceptionHandler();
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
             app.UseCors("AllowAll");
 
@@ -97,6 +96,7 @@ namespace AddressBook_API
 
 
             app.MapControllers();
+            app.UseStaticFiles();
 
             app.Run();
         }
