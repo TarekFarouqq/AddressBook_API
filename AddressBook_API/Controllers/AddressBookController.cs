@@ -9,8 +9,8 @@ namespace AddressBook_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
-    [AllowAnonymous]
+    [Authorize]
+
 
     public class AddressBookController : ControllerBase
     {
