@@ -9,7 +9,8 @@ namespace AddressBook_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
+    [AllowAnonymous]
 
     public class AddressBookController : ControllerBase
     {
@@ -24,6 +25,17 @@ namespace AddressBook_API.Controllers
         public async Task<IActionResult> Search([FromQuery] AddressBookSearchQuery query)
         {
             var result = await _service.SearchAsync(query);
+            var request = HttpContext.Request;
+            var baseUrl = $"{request.Scheme}://{request.Host}";
+
+            foreach (var item in result.Items)
+            {
+                if (item.PhotoFileName != null)
+                { 
+                    item.PhotoFileName = $"{baseUrl}/{item.PhotoFileName}";
+                }
+            }
+
             return Ok(result);
         }
 
