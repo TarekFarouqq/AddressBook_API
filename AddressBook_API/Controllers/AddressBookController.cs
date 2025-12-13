@@ -9,7 +9,7 @@ namespace AddressBook_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
+    [Authorize]
 
     public class AddressBookController : ControllerBase
     {
@@ -43,11 +43,36 @@ namespace AddressBook_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] AddressBookCreateDto dto)
+        public async Task<IActionResult> Create([FromForm] AddressBookCreateRequest request)
         {
-            var id = await _service.CreateAsync(dto);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var dto = new AddressBookCreateDto
+            {
+                FullName = request.FullName,
+                JobId = request.JobId,
+                DepartmentId = request.DepartmentId,
+                MobileNumber = request.MobileNumber,
+                DateOfBirth = request.DateOfBirth,
+                Address = request.Address,
+                Email = request.Email
+            };
+
+            Stream? photoStream = null;
+            string? originalFileName = null;
+
+            if (request.Photo != null && request.Photo.Length > 0)
+            {
+                photoStream = request.Photo.OpenReadStream();
+                originalFileName = request.Photo.FileName;
+            }
+
+            var id = await _service.CreateAsync(dto, photoStream, originalFileName);
+
             return CreatedAtAction(nameof(Get), new { id }, null);
         }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] AddressBookReadDto dto)

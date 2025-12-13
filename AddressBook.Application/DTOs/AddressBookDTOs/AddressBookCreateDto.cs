@@ -39,10 +39,10 @@ namespace AddressBook.Application.DTOs.AddressBookDTOs
             public string Email { get; set; } = string.Empty;
 
 
-            //[StringLength(255, ErrorMessage = "Photo filename too long")]
-            //[Display(Name = "Photo")]
-            //public string? PhotoFileName { get; set; }
+        [StringLength(255, ErrorMessage = "Photo filename too long")]
+        [Display(Name = "Photo")]
+        public string? PhotoFileName { get; set; }
 
 
-        }
+    }
 }

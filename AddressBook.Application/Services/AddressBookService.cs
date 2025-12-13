@@ -13,18 +13,31 @@ namespace AddressBook.Application.Services
     {
 
         private readonly IUnitOfWork _uow;
+        private readonly IFileStorageService _fileStorage;
 
-        public AddressBookService(IUnitOfWork uow)
+        public AddressBookService(IUnitOfWork uow , IFileStorageService fileStorage)
         {
             _uow = uow;
+            _fileStorage = fileStorage;
         }
 
-        public async Task<int> CreateAsync(AddressBookCreateDto dto)
+        public async Task<int> CreateAsync(AddressBookCreateDto dto, Stream? photoStream = null, string? originalFileName = null)
         {
-            var entity = MapToNewEntity(dto);
+            string? photoFileName = null;
+
+            if (photoStream != null && originalFileName != null)
+            {
+                photoFileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
+                await _fileStorage.SaveAsync(photoStream, photoFileName);
+            }
+
+            var entity = MapToNewEntity(dto , photoFileName);
+
+           
             await _uow.Entries.AddAsync(entity);
             await _uow.SaveChangesAsync();
             return entity.Id;
+        
         }
 
         public async Task DeleteAsync(int id)
@@ -124,10 +137,10 @@ namespace AddressBook.Application.Services
             e.DateOfBirth = dto.DateOfBirth;
             e.Address = dto.Address;
             e.Email = dto.Email;
-            //e.PhotoFileName = dto.PhotoFileName;
+            e.PhotoFileName = dto.PhotoFileName;
         }
 
-        private AddressBookEntry MapToNewEntity(AddressBookCreateDto dto)
+        private AddressBookEntry MapToNewEntity(AddressBookCreateDto dto  ,string?  photoFileName)
         {
             return new AddressBookEntry
             {
@@ -138,7 +151,7 @@ namespace AddressBook.Application.Services
                 DateOfBirth = dto.DateOfBirth,
                 Address = dto.Address,
                 Email = dto.Email,
-                //PhotoFileName = dto.PhotoFileName
+                PhotoFileName = photoFileName
             };
         }
         #endregion

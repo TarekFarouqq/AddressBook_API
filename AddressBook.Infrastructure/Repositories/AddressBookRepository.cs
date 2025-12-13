@@ -78,7 +78,8 @@ namespace AddressBook.Infrastructure.Repositories
                     Address = x.Address,
                     Email = x.Email,
                     DateOfBirth = x.DateOfBirth,
-                    Age=x.Age
+                    PhotoFileName = x.PhotoFileName,
+                    Age =x.Age
                 })
                 .ToListAsync(ct);
 
