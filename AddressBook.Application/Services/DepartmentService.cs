@@ -30,6 +30,14 @@ namespace AddressBook.Application.Services
         {
             var dept = await _uow.Departments.GetByIdAsync(id);
             if (dept == null) throw new KeyNotFoundException();
+
+            var hasAddressBooks = await _uow.Entries.AnyAsync(a => a.DepartmentId == id && !a.IsDeleted);
+
+            if (hasAddressBooks)
+                throw new InvalidOperationException(
+                    "Cannot delete department because it contains address book entries."
+                );
+
             _uow.Departments.Remove(dept);
             await _uow.SaveChangesAsync();
         }
@@ -65,5 +73,7 @@ namespace AddressBook.Application.Services
             _uow.Departments.Update(dept);
             await _uow.SaveChangesAsync();
         }
+
+
     }
 }

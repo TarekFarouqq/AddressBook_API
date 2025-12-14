@@ -23,21 +23,26 @@ namespace AddressBook.Application.Services
 
         public async Task<int> CreateAsync(AddressBookCreateDto dto, Stream? photoStream = null, string? originalFileName = null)
         {
-            string? photoFileName = null;
+            string? photoPath = null;
 
-            if (photoStream != null && originalFileName != null)
+            if (photoStream != null && !string.IsNullOrWhiteSpace(originalFileName))
             {
-                photoFileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
-                await _fileStorage.SaveAsync(photoStream, photoFileName);
+                var extension = Path.GetExtension(originalFileName);
+                if (string.IsNullOrWhiteSpace(extension))
+                    extension = ".png";
+
+                var fileName = $"{Guid.NewGuid():N}{extension}";
+
+               
+                photoPath = await _fileStorage.SaveAsync(photoStream, fileName);
             }
 
-            var entity = MapToNewEntity(dto , photoFileName);
+            var entity = MapToNewEntity(dto, photoPath);
 
-           
             await _uow.Entries.AddAsync(entity);
             await _uow.SaveChangesAsync();
+
             return entity.Id;
-        
         }
 
         public async Task DeleteAsync(int id)
