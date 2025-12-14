@@ -19,15 +19,26 @@ namespace AddressBook.Application.Services
 
         public async Task<string?> SaveAsync(Stream fileStream, string fileName)
         {
-            var uploadsPath = Path.Combine(_env.WebRootPath, "photos");
+            if (fileStream == null) throw new ArgumentNullException(nameof(fileStream));
+            if (string.IsNullOrWhiteSpace(fileName)) throw new ArgumentNullException(nameof(fileName));
+
+            fileName = Path.GetFileName(fileName);
+
+            var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+            var folderName = "photos";
+
+            var uploadsPath = Path.Combine(webRoot, folderName);
             Directory.CreateDirectory(uploadsPath);
 
             var fullPath = Path.Combine(uploadsPath, fileName);
 
-            using var stream = new FileStream(fullPath, FileMode.Create);
+            if (fileStream.CanSeek) fileStream.Position = 0;
+
+            await using var stream = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.None);
             await fileStream.CopyToAsync(stream);
 
-            return fileName;
+            
+            return $"{folderName}/{fileName}";
         }
     }
-}
+    }

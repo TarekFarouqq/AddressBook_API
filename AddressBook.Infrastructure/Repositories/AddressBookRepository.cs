@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using AddressBook.Application.DTOs.AddressBookDTOs;
@@ -29,6 +30,11 @@ namespace AddressBook.Infrastructure.Repositories
                 .Include(x => x.Job)
                 .Include(x => x.Department)
                 .ToListAsync();
+        }
+
+        public async Task<bool> AnyAsync(Expression<Func<AddressBookEntry, bool>> predicate)
+        {
+            return await _dbSet.AnyAsync(predicate);
         }
 
         public async Task<PagedResult<AddressBookReadDto>> SearchAsync(AddressBookSearchQuery query, CancellationToken ct = default)

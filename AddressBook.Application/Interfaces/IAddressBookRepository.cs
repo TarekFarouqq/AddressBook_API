@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using AddressBook.Application.DTOs.AddressBookDTOs;
@@ -11,5 +12,6 @@ namespace AddressBook.Application.Interfaces
     public interface IAddressBookRepository : IGenericRepository<AddressBookEntry>
     {
         Task<PagedResult<AddressBookReadDto>> SearchAsync( AddressBookSearchQuery query,CancellationToken ct = default);
+        Task<bool> AnyAsync(Expression<Func<AddressBookEntry, bool>> predicate);
     }
 }

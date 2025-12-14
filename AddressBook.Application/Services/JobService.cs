@@ -31,6 +31,13 @@ namespace AddressBook.Application.Services
         {
             var job = await _uow.Jobs.GetByIdAsync(id);
             if (job == null) throw new KeyNotFoundException();
+
+            var hasAddressBooks = await _uow.Entries.AnyAsync(a => a.JobId == id && !a.IsDeleted);
+
+            if (hasAddressBooks)
+                throw new InvalidOperationException(
+                    "Cannot delete job because it contains address book entries."
+                );
             _uow.Jobs.Remove(job);
             await _uow.SaveChangesAsync();
         }
