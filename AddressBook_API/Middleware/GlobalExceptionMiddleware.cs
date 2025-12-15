@@ -28,6 +28,7 @@ namespace AddressBook_API.Middleware
                 {
                     KeyNotFoundException => (int)HttpStatusCode.NotFound,
                     ArgumentException => (int)HttpStatusCode.BadRequest,
+                    InvalidOperationException => (int)HttpStatusCode.Conflict, 
                     UnauthorizedAccessException => (int)HttpStatusCode.Unauthorized,
                     _ => (int)HttpStatusCode.InternalServerError
                 };
